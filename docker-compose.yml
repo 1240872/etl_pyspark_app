@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  spark-master:
+    image: 'docker.io/bitnami/spark:3.1.2'
+    volumes:
+      - type: bind
+        source: ./data
+        target: /opt/data
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+
+  spark-worker-1:
+    depends_on:
+      - spark-master
+    image: 'docker.io/bitnami/spark:3.1.2'
+    volumes:
+      - type: bind
+        source: ./data
+        target: /opt/data
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+
+  spark-worker-2:
+    depends_on:
+      - spark-master
+    image: 'docker.io/bitnami/spark:3.1.2'
+    volumes:
+      - type: bind
+        source: ./data
+        target: /opt/data
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres  # Default PostgreSQL username
+      - POSTGRES_PASSWORD=postgres  # Default PostgreSQL password
+      - POSTGRES_DB=postgres  # Default PostgreSQL database
+    ports:
+      - "5432:5432"
+
+  etl_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./data
+        target: /opt/data
+    depends_on:
+      - spark-master
