@@ -1,10 +1,10 @@
 from pyspark.sql import SparkSession
- from pyspark.sql.functions import col, sum, row_number, lead, datediff
- from pyspark.sql.window import Window
- from pyspark.sql import functions as F
- from pyspark.sql.types import IntegerType
- import os
- import argparse
+from pyspark.sql.functions import col, sum, row_number, lead, datediff
+from pyspark.sql.window import Window
+from pyspark.sql import functions as F
+from pyspark.sql.types import IntegerType
+import os
+import argparse
 
  print("Environment Variables:", os.environ)
 
