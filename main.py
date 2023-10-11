@@ -14,7 +14,7 @@ from pyspark.sql import SparkSession
      spark = SparkSession.builder \
          .appName("ETL Application") \
          .master("spark://spark-master:7077") \
-         .config("spark.jars", "/opt/bitnami/spark/jars/postgresql-42.6.0.jar,/opt/bitnami/spark/jars/streak.jar") \
+         .config("spark.jars", "/opt/bitnami/spark/jars/postgresql-42.6.0.jar") \
          .getOrCreate()
 
      try:
@@ -71,12 +71,14 @@ from pyspark.sql import SparkSession
 
              return longest_streak + 1
 
-         get_longest_streak_udf = F.udf(get_longest_streak, IntegerType())
+# commented out the UDF as it is not working in the spark-submit due to python version mismatch between the spark and the workers
 
-         with_longest_streak = grouped_df.withColumn("longest_streak", get_longest_streak_udf("date_diff_list"))
-         with_longest_streak.select("custId", "longest_streak").show()
-
-         target_df = ranked_products_df.join(with_longest_streak, "custId", "inner")
+#          get_longest_streak_udf = F.udf(get_longest_streak, IntegerType())
+#
+#          with_longest_streak = grouped_df.withColumn("longest_streak", get_longest_streak_udf("date_diff_list"))
+#          with_longest_streak.select("custId", "longest_streak").show()
+#
+#          target_df = ranked_products_df.join(with_longest_streak, "custId", "inner")
 
          # Define the PostgreSQL connection properties
          url = f"jdbc:postgresql://postgres:5432/{database}"
@@ -87,7 +89,7 @@ from pyspark.sql import SparkSession
          }
 
          # # Write the DataFrame to the Postgres SQL table
-         target_df.write.jdbc(url=url, table=table, mode="overwrite", properties=properties)
+         grouped_df.write.jdbc(url=url, table=table, mode="overwrite", properties=properties)
 
          # Specify the Postgres SQL query to read data
          query = "(SELECT * FROM customers) AS tmp"

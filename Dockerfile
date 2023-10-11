@@ -9,8 +9,8 @@ COPY . /app
 
 # Install dependencies using Poetry
 RUN pip install --no-cache-dir poetry \
- && poetry config virtualenvs.create false \
- && poetry install --no-dev
+    && poetry config virtualenvs.create false \
+    && poetry install --no-dev
 
 COPY --from=openjdk:8-jre-slim /usr/local/openjdk-8 /usr/local/openjdk-8
 
