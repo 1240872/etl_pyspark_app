@@ -25,6 +25,18 @@ The system collects transactional data and stores them as CSV files. A sample in
 To run the ETL pipeline, use the following command:
 
 ```shell
-docker-compose build # build the image
-docker-compose up    # run the etl job 
+# build the image
+docker-compose build 
+
+# run the container
+docker-compose up  
+
+# check the container ID  
+docker ps
+
+# run the ETL pipeline
+docker-compose exec etl_app poetry run python main.py --source_file_path /opt/data/transaction.csv --database postgres --table customers
+
+# To run the integration test
+docker-compose exec integration_test pytest integration_test.py
 ```

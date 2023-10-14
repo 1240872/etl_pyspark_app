@@ -72,3 +72,14 @@ services:
         target: /opt/data
     depends_on:
       - spark-master
+
+  integration_test:
+    build:
+      context: .
+      dockerfile: DockerIntegrationTestFile
+    volumes:
+      - type: bind
+        source: ./data
+        target: /opt/data
+    depends_on:
+      - spark-master

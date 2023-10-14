@@ -12,21 +12,20 @@ RUN pip install --no-cache-dir poetry \
     && poetry config virtualenvs.create false \
     && poetry install --no-dev
 
+# Install java 8
 COPY --from=openjdk:8-jre-slim /usr/local/openjdk-8 /usr/local/openjdk-8
 
+# Set JAVA_HOME
 ENV JAVA_HOME /usr/local/openjdk-8
 
+# Set the path to include JAVA
 RUN update-alternatives --install /usr/bin/java java /usr/local/openjdk-8/bin/java 1
-
-# Check Poetry version
-RUN poetry --version
-RUN echo "$PATH"
 
 # Copy the JDBC driver JAR to the Spark jars directory
 COPY ./jdbc_driver /opt/bitnami/spark/jars/
 
+# Install dependencies for running the integration test
+RUN pip install pyspark pytest
+
 # The command to start the container and it will keep running the container
 CMD ["tail", "-f", "/dev/null"]
-
-# Command to run the application using Poetry
-# CMD ["poetry", "run", "python", "main.py", "--source_file_path", "/opt/data/transaction.csv", "--database", "postgres", "--table", "customers"]
