@@ -62,8 +62,7 @@ def run_spark_job(source_path: str, database_name: str, table_name: str, spark_s
     get_longest_streak_udf = F.udf(get_longest_streak, IntegerType())
     with_longest_streak = grouped_df.withColumn("longest_streak", get_longest_streak_udf("date_diff_list"))
     with_longest_streak.select("custId", "longest_streak").show()
-    target_df = ranked_products_df.join(with_longest_streak, "custId", "inner").select("custId", "favoriteProduct",
-                                                                                       "longest_streak")
+    target_df = ranked_products_df.join(with_longest_streak, "custId", "inner").withColumnRenamed("custId", "customer_id").withColumnRenamed("favoriteProduct", "favourite_product").select("customer_id", "favourite_product", "longest_streak")
 
     # Define the PostgreSQL connection properties
     url = f"jdbc:postgresql://postgres:5432/{database_name}"
