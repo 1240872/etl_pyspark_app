@@ -1,6 +1,7 @@
 import unittest
 from main import run_spark_job
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 
 
 class TestIntegration(unittest.TestCase):
